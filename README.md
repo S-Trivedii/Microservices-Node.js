@@ -1,4 +1,4 @@
-This is the first of Mini microservice app.
+This is the first half of Mini-Microservice app.
 Till first of this project, three services are created:
   1. Post service - For creating the post
   2. Comment service - For creating comment associated with that post
