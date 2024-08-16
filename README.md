@@ -1,5 +1,5 @@
 This is the first half of Mini-Microservice app.
-Till first of this project, three services are created:
+Till first half of this project, three services are created:
   1. Post service - For creating the post
   2. Comment service - For creating comment associated with that post
   3. Query service
