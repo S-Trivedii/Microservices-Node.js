@@ -23,16 +23,19 @@ app.post("/posts/:id/comments", (req, res) => {
   // Retrieves the current comments array for the post. If it doesn't exist, it defaults to an empty array.
   const comments = commentsByPostId[req.params.id] || [];
 
-  comments.push({ id: commentId, content });
+  // creating a status property with the default value 'pending'. We are creating a moderation service, when a user create a comment, an event will created called commentCreated. This event will go to the event-bus, event-bus then send this event to moderation service and query service.
+  comments.push({ id: commentId, content, status: "pending" });
 
   commentsByPostId[req.params.id] = comments;
 
+  // emitting an event called commentCreated and sending it to the event bus
   axios.post("http://localhost:4005/events", {
     type: "CommentCreated",
     data: {
       id: commentId,
       content,
       postId: req.params.id,
+      status: "pending", // lecture - 43
     },
   });
 
@@ -40,8 +43,33 @@ app.post("/posts/:id/comments", (req, res) => {
 });
 
 // Receiving event form the event bus/broker
-app.post("/events", (req, res) => {
+app.post("/events", async (req, res) => {
   console.log("Event Received: ", req.body.type);
+
+  // Processing the received event(commentModerated event)
+
+  const { type, data } = req.body;
+
+  if (type === "CommentModerated") {
+    const { postId, id, status, content } = data;
+    const comments = commentsByPostId[postId];
+
+    const comment = comments.find((comment) => {
+      return comment.id === id;
+    });
+    // updating the status to either 'approved or rejected' from pending
+    comment.status = status;
+
+    await axios.post("http://localhost:4005/events", {
+      type: "CommentUpdated",
+      data: {
+        id,
+        status,
+        postId,
+        content,
+      },
+    });
+  }
 
   res.send({});
 });
