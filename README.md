@@ -1,4 +1,5 @@
 # Microservices-Node.js
 
-Checkout first-half of the project - first-half branch
-Checkout second-half of the project - second-half branch
+1. Checkout first-half of the project - first-half branch
+
+2. Checkout second-half of the project - second-half branch
